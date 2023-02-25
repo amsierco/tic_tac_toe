@@ -1,0 +1,37 @@
+html,
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.board-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    background-color: black;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid black;
+    min-width: 200px;
+    min-height: 200px;
+    border-radius: 30px;
+}
+
+.cell {
+    background-color: white;
+    border: .5rem solid white;
+    border-radius: 25px;
+}
+
+.cell#unmarked {
+    /*border: .5rem solid green;*/
+}
+
+.cell#marked {
+    /*border: .5rem solid red;*/
+}
