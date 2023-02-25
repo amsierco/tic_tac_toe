@@ -36,7 +36,12 @@ const gameManager = (() => {
             [content(0,0),content(1,1),content(2,2)],
             [content(0,2),content(1,1),content(2,0)],
         ];
-        return {getId, directions};
+
+        const childrenFactory = () => {
+            return board.children;
+        }
+
+        return {getId, directions, childrenFactory};
     };
 
     //Temporary players
@@ -71,12 +76,20 @@ const gameManager = (() => {
         return (arr[0].textContent == arr[1].textContent && arr[1].textContent == arr[2].textContent);
     }
 
+
+    //WORK ON THIS SECTION!
     function checkGameState(){
-        for(let i=0; i<boardStorage.length; i++){
+        for(var i=0; i<boardStorage.length; i++){
             let toCheck = boardStorage[i].directions;
-            for(let i of toCheck){
-                if(allEqual(i) == true){
-                    console.log('VICTOR HAS OCCURED! '+ i[0].textContent);
+            for(let j of toCheck){
+                if(allEqual(j) == true){
+                    console.log('VICTOR HAS OCCURED! '+ j[0].textContent);
+                    //console.log(boardStorage[i].childrenFactory());
+                    for(k of boardStorage[i].childrenFactory()){
+                        k.setAttribute('id', 'marked');
+                        k.style.backgroundColor = 'green';
+                    }
+                    return;
                 }
             }
         }
