@@ -5,68 +5,117 @@ const playerFactory = (name, symbol) => {
     return {getName, getSymbol};
 };
 
+
+//Board Factory
+const boardFactory = board => {
+
+    const getNumber = () => board.getAttribute('class').substr(7);
+    const getId = () => board.getAttribute('id');
+    const getBoard = () => board;
+
+    const children = Array.from(board.children);
+    children.forEach(btn => {
+        btn.addEventListener('click', () => {
+            gameManager.takeTurn(btn);
+            // gameConditions.checkForWin(board);
+            gameManager.checkConditions(getNumber());
+            //console.log(board.getAttribute('class').substr(6));
+        });
+    });
+
+    function getCell (column, row){
+        return (document.querySelector('.b'+board.getAttribute('class').substr(7)+' .c'+column+row)); 
+    }
+
+    const winCases = [
+        //Columns
+        [getCell(0,0),getCell(0,1),getCell(0,2)],
+        [getCell(1,0),getCell(1,1),getCell(1,2)],
+        [getCell(2,0),getCell(2,1),getCell(2,2)],
+        //Rows
+        [getCell(0,0),getCell(1,0),getCell(2,0)],
+        [getCell(0,1),getCell(1,1),getCell(2,1)],
+        [getCell(0,2),getCell(1,2),getCell(2,2)],
+        //Diagonal
+        [getCell(0,0),getCell(1,1),getCell(2,2)],
+        [getCell(0,2),getCell(1,1),getCell(2,0)],
+    ];
+
+//console.log(winCases);
+
+    const winPatterns = () => winCases;
+    
+
+    return {getNumber, getBoard, getId, winPatterns, winCases};
+};
+
+
 const gameManager = (() => {
 
-    //Local Factories
-    const boardFactory = (board) => {
-        const getId = () => board.getAttribute('id').substr(1);
-        for (let btn of board.children){
-            btn.addEventListener('click', () => {
-                if(btn.getAttribute('id') != 'marked'){
-                    takeTurn(btn);
-                }
-                btn.setAttribute('id', 'marked');
-            });
-        }
-
-        function content (column, row){
-            return (document.querySelector('.'+board.getAttribute('class').substr(0,5)+' .c'+column+row));    //('#'+column+'-'+row));
-        }
-
-        var directions = [
-            //Columns
-            [content(0,0),content(0,1),content(0,2)],
-            [content(1,0),content(1,1),content(1,2)],
-            [content(2,0),content(2,1),content(2,2)],
-            //Rows
-            [content(0,0),content(1,0),content(2,0)],
-            [content(0,1),content(1,1),content(2,1)],
-            [content(0,2),content(1,2),content(2,2)],
-            //Diagonal
-            [content(0,0),content(1,1),content(2,2)],
-            [content(0,2),content(1,1),content(2,0)],
-        ];
-
-        const childrenFactory = () => {
-            return board.children;
-        }
-
-        return {getId, directions, childrenFactory};
-    };
-
-    //Temporary players
+    //Variables
     const playerOne = playerFactory('Player One', 'X');
     const playerTwo = playerFactory('player Two', 'O');
-    //const playerThree = playerFactory('player Three', 'Y');
-    const playerStorage = [playerOne, playerTwo];//, playerThree];
+    const playerStorage = [playerOne, playerTwo];
     var order = 0;
+    const boardStorage = [];
+    const test=[];
+
 
     //Array of board objects
-    const boardStorage = [];
     for (let i=0; i<document.querySelectorAll('.board').length; i++){
-        boardStorage[i] = boardFactory(document.querySelectorAll('.board')[i]);
+        boardStorage[i] = boardFactory(document.querySelector('.b'+i));
+        test[i]  =document.querySelector('.b'+i);
+    }
+
+    for (let index = 0; index < test.length; index++){
+        //console.log(test[index]);
+        //console.log(boardStorage[index].getBoard());
+      
     }
 
     function takeTurn(btn) {
-        btn.textContent = playerStorage[order].getSymbol();
-        btn.style.cssText = 'font-size: 2rem;';
-        if(order >= playerStorage.length-1){
-            order = 0;
-        } 
-        else {
-            order++;
+        if(btn.getAttribute('id') == 'marked'){
+            return false;
         }
-        checkGameState();
+        else
+        {
+            btn.setAttribute('id', 'marked');
+        }
+        btn.textContent = playerStorage[order].getSymbol();
+        order >= playerStorage.length-1 ? order=0 : order++;
+        //checkGameState();
+    }
+
+    function checkConditions(boardId){
+        gameConditions.checkForWin(boardStorage[boardId]);
+    }
+
+
+    return {takeTurn, checkConditions};
+})();
+
+const gameConditions = (() => {
+
+    function checkForWin(board){
+       // console.log(board.getBoard().getAttribute('class'));
+        //const children = board.getBoard().querySelectorAll('.cell');//document.querySelectorAll('.b'+board.getNumber());
+        //console.log(children);
+        for(let i=0; i<board.winCases.length; i++){
+            if(allEqual(board.winCases[i])){
+                board.getBoard().style.backgroundColor = 'purple';
+            }
+        }
+    }
+
+    function checkGameState(){
+        for(let i=0; i<boardStorage.length; i++){
+            if(boardStorage[i].getId() == 'in-progress' && checkForWin(boardStorage[i].getBoard()) == true){
+                // console.log('class: '+boardStorage[i].getClass());
+                boardStorage[i].getBoard().style.backgroundColor = 'blue';
+                // console.log(boardStorage[i].getClass());
+                boardStorage[i].getBoard().setAttribute('id', 'done');
+            }
+        }
     }
 
     function allEqual (arr) {
@@ -76,23 +125,6 @@ const gameManager = (() => {
         return (arr[0].textContent == arr[1].textContent && arr[1].textContent == arr[2].textContent);
     }
 
+    return {checkForWin, checkGameState};
 
-    //WORK ON THIS SECTION!
-    function checkGameState(){
-        for(var i=0; i<boardStorage.length; i++){
-            let toCheck = boardStorage[i].directions;
-            for(let j of toCheck){
-                if(allEqual(j) == true){
-                    console.log('VICTOR HAS OCCURED! '+ j[0].textContent);
-                    //console.log(boardStorage[i].childrenFactory());
-                    for(k of boardStorage[i].childrenFactory()){
-                        k.setAttribute('id', 'marked');
-                        k.style.backgroundColor = 'green';
-                    }
-                    return;
-                }
-            }
-        }
-    }
 })();
-

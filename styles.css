@@ -29,9 +29,20 @@ body {
 }
 
 .cell#unmarked {
-    /*border: .5rem solid green;*/
+    border: 2px solid green;
 }
 
 .cell#marked {
-    /*border: .5rem solid red;*/
+    border: 2px solid red;
+}
+.board#in-progress {
+    border: 5px solid purple;
+}
+
+.board#done {
+    border: 5px solid red;
+}
+
+button {
+    font-size: 2rem;
 }
