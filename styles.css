@@ -4,45 +4,87 @@ body {
     padding: 0px;
 }
 
-.board-container {
+body {
+    --background-page: linear-gradient(45deg, red, pink, cyan);
+    background: var(--background-page);
+    background-size: 200% 200%;
+    padding: 10px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.header {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(20px, 10%, 10rem);
+    font-size: clamp(3rem, 4rem, 5rem);
+    font-weight: 700;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.board-container {
+    --background-board: rgba(240,240,240,0.5);
+    --background-cell: rgba(116,116,116,.5);
+    --board-done: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    overflow: none;
+    gap: clamp(5px, 5%, 3rem);
+}
+
+.board-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    grid-template-rows: repeat(3, 1fr);
+    gap: clamp(5px, 5%, 3rem);
+    width: min(75%, 700px);
+    aspect-ratio: 1 / 1;
+}
+
+@media(max-width: 700px){
+    .board-container{
+        flex-direction: column;
+
+    }
 }
 
 .board {
+    background-color: var(--background-board);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    background-color: black;
-    gap: 1rem;
-    padding: 1rem;
-    border: 2px solid black;
-    min-width: 200px;
-    min-height: 200px;
+    gap: .75rem;
+    padding: .7rem;
+    border: 2px solid var(--background-cell);
+    min-width: 10rem;
+    min-height: 10rem;
     border-radius: 30px;
+    box-shadow: 0px 0px 20px 1px rgba(116,116,116,.9);
 }
 
 .cell {
-    background-color: white;
-    border: .5rem solid white;
-    border-radius: 25px;
+    background-color: var(--background-cell);
+    border: 0px solid var(--background-cell);
+    border-radius: 1rem;
+    min-width: 3rem;
+    min-height: 3rem;
 }
 
-.cell#unmarked {
-    border: 2px solid green;
-}
 
-.cell#marked {
-    border: 2px solid red;
-}
-.board#in-progress {
-    border: 5px solid purple;
-}
+.board#doneX > .cell,
+.board#doneO > .cell  { background-color: var(--board-done);}
 
-.board#done {
-    border: 5px solid red;
-}
+.board#doneX,
+.board#doneO { border: 2px solid var(--board-done);}
 
 button {
     font-size: 2rem;
 }
+
+button:hover {
+    box-shadow: 0px 0px 1px 2px rgba(0,0,0,.2);
+}
+
